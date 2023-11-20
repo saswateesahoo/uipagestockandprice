@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 const StockPage = () => {
   const [stock, setStock] = useState([]);
   const [Stockfiltered, setStockfiltered] = useState([]);
-  const [searchitem, setSearchitem] = useState('');
+  const [searchitem, setSearchitem] = useState([]);
 
   useEffect(() => {
     fetch('https://prototype.sbulltech.com/api/v2/instruments')
@@ -20,11 +20,11 @@ const StockPage = () => {
     const headers = lines[0].split(',');
     const jsonData = lines.slice(1).map((line) => {
       const values = line.split(',');
-      const obj = {};
+      const object = {};
       headers.forEach((header, index) => {
-        obj[header] = values[index];
+        object[header] = values[index];
       });
-      return obj;
+      return object;
     });
     return jsonData;
   };
@@ -51,21 +51,22 @@ const StockPage = () => {
         onChange={handleSearch}
       />
       <table>
-        
-        <thead>
+        <thead> 
         <br></br>
           <tr>
             <th>Symbol</th>
             <th>Name</th>
             <th>Sector</th>
+            <th>Validtill</th>
           </tr>
-        </thead>
+         </thead> 
         <tbody>
           {Stockfiltered.map((stock, index) => (
             <tr key={index}>
               <td>{stock.Symbol}</td>
               <td>{stock.Name}</td>
               <td>{stock.Sector}</td>
+              <td>{stock.Validtill}</td>
             </tr>
           ))}
         </tbody>
