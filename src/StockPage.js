@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import Fuse from 'fuse.js';
 
 const StockPage = () => {
   const [stock, setStock] = useState([]);
-  const [Stockfiltered, setStockfiltered] = useState([]);
-  const [searchitem, setSearchitem] = useState([]);
+  const [stockFiltered, setStockFiltered] = useState([]);
+  const [searchItem, setSearchItem] = useState('');
 
   useEffect(() => {
     fetch('https://prototype.sbulltech.com/api/v2/instruments')
@@ -11,9 +12,9 @@ const StockPage = () => {
       .then((data) => {
         const jsonData = convertCSVtoJSON(data);
         setStock(jsonData);
-        setStockfiltered(jsonData);
-      })
- }, []);
+        setStockFiltered(jsonData);
+      });
+  }, []);
 
   const convertCSVtoJSON = (csvData) => {
     const lines = csvData.trim().split('\n');
@@ -30,50 +31,53 @@ const StockPage = () => {
   };
 
   const handleSearch = (e) => {
-    const value = e.target.value.toLowerCase();
-    setSearchitem(value);
-    const filtered = stock.filter(
-      (stock) =>
-        stock.Symbol.toLowerCase().includes(value) ||
-        stock.Name.toLowerCase().includes(value)   ||
-        stock.Sector.toLowerCase().includes(value)  ||
-        stock.Validtill.toLowerCase().includes(value)
-    );
-    setStockfiltered(filtered);
+    const value = e.target.value.trim();
+    setSearchItem(value);
+
+    if (!value) {
+      setStockFiltered(stock);
+      return;
+    }
+
+    const opt = {
+      keys: ['Symbol', 'Name', 'Sector', 'Validtill'],
+    };
+      const fuse = new Fuse(stock, opt);
+      const result = fuse.search(value);
+    const filtered = result.map((item) => item.item);
+    setStockFiltered(filtered);
   };
 
   return (
     <div>
-      
       <input
-        type="text"
-         placeholder="Search here .."
-        value={searchitem}
+       type="text"
+        placeholder="Search here.."
+        value={searchItem}
         onChange={handleSearch}
       />
       <table>
-        <thead> 
-        <br></br>
+        <thead>
           <tr>
             <th>Symbol</th>
             <th>Name</th>
             <th>Sector</th>
             <th>Validtill</th>
           </tr>
-         </thead> 
+        </thead>
         <tbody>
-          {Stockfiltered.map((stock, index) => (
+          {stockFiltered.map((stockItem, index) => (
             <tr key={index}>
-              <td>{stock.Symbol}</td>
-              <td>{stock.Name}</td>
-              <td>{stock.Sector}</td>
-              <td>{stock.Validtill}</td>
+              <td>{stockItem.Symbol}</td>
+              <td>{stockItem.Name}</td>
+              <td>{stockItem.Sector}</td>
+              <td>{stockItem.Validtill}</td>
             </tr>
           ))}
         </tbody>
       </table>
     </div>
   );
- };
+};
 
 export default StockPage;
