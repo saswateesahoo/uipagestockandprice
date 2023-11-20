@@ -36,7 +36,8 @@ const StockPage = () => {
       (stock) =>
         stock.Symbol.toLowerCase().includes(value) ||
         stock.Name.toLowerCase().includes(value)   ||
-        stock.Sector.toLowerCase().includes(value)
+        stock.Sector.toLowerCase().includes(value)  ||
+        stock.Validtill.toLowerCase().includes(value)
     );
     setStockfiltered(filtered);
   };
