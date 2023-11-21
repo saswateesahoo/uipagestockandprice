@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import Fuse from 'fuse.js';
+import { useNavigate } from 'react-router-dom';
 
 const StockPage = () => {
   const [stock, setStock] = useState([]);
   const [stockFiltered, setStockFiltered] = useState([]);
   const [searchItem, setSearchItem] = useState('');
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     fetch('https://prototype.sbulltech.com/api/v2/instruments')
@@ -38,20 +40,25 @@ const StockPage = () => {
       setStockFiltered(stock);
       return;
     }
-
     const opt = {
       keys: ['Symbol', 'Name', 'Sector', 'Validtill'],
     };
-      const fuse = new Fuse(stock, opt);
-      const result = fuse.search(value);
-    const filtered = result.map((item) => item.item);
-    setStockFiltered(filtered);
+
+    const fuse = new Fuse(stock, opt);
+    const result = fuse.search(value);
+    const filter = result.map((item) => item.item);
+    setStockFiltered(filter);
+  };
+
+  const navigateToQuotes = (symbol) => {
+    console.log(`Redirecting to Quotes page  ${symbol}`);
+    navigate(`/quotes/${symbol}`);
   };
 
   return (
     <div>
       <input
-       type="text"
+        type="text"
         placeholder="Search here.."
         value={searchItem}
         onChange={handleSearch}
@@ -68,7 +75,12 @@ const StockPage = () => {
         <tbody>
           {stockFiltered.map((stockItem, index) => (
             <tr key={index}>
-              <td>{stockItem.Symbol}</td>
+              <td
+                style={{ cursor: 'pointer'}}
+                onClick={() => navigateToQuotes(stockItem.Symbol)}
+              >
+                {stockItem.Symbol}
+              </td>
               <td>{stockItem.Name}</td>
               <td>{stockItem.Sector}</td>
               <td>{stockItem.Validtill}</td>
