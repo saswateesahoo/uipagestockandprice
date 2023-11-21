@@ -33,7 +33,7 @@ const StockPage = () => {
   };
 
   const handleSearch = (e) => {
-    const value = e.target.value.trim();
+    const value = e.target.value;
     setSearchItem(value);
 
     if (!value) {

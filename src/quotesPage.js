@@ -3,29 +3,41 @@ import { useParams } from 'react-router-dom';
 
 const QuotesPage = () => {
   const [quotes, setQuotes] = useState([]);
-  const { symbol } = useParams();
+  const { symbol } = useParams('');
 
-  useEffect(() => {
+  const fetchQuotes = React.useCallback(() => {
     fetch(`https://prototype.sbulltech.com/api/v2/quotes/${symbol}`)
       .then((response) => response.json())
       .then((data) => {
         if (data.success) {
-          setQuotes(data.payload[symbol] || []);
+          const quotesData = data.payload[symbol] || [];
+          setQuotes(quotesData);
         }
       })
       .catch((error) => console.log('Error fetching'));
   }, [symbol]);
+
+  useEffect(() => {
+    fetchQuotes(); 
+
+    const intervalId = setInterval(() => {
+      window.location.reload(); 
+    }, 20000);
+
+    return () => {
+      clearInterval(intervalId); 
+    };
+  }, [fetchQuotes]);
+
   return (
     <div>
-      <h2>Welcome To {symbol}</h2>
+      <h1>Welcome to {symbol}</h1>
       <table>
         <thead>
-        
           <tr>
-    
             <th>Time</th>
             <th>Price</th>
-            <th>ValidTill</th>
+            <th>Valid Till</th>
           </tr>
         </thead>
         <tbody>
@@ -42,4 +54,3 @@ const QuotesPage = () => {
   );
 };
 export default QuotesPage;
-
