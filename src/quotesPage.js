@@ -17,7 +17,7 @@ const QuotesPage = () => {
   }, [symbol]);
   return (
     <div>
-      <h1>welcome to {symbol}</h1>
+      <h2>Welcome To {symbol}</h2>
       <table>
         <thead>
         
