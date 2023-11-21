@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 
 const QuotesPage = () => {
   const [quotes, setQuotes] = useState([]);
-  const { symbol } = useParams('');
+    const { symbol } = useParams('');
 
   const fetchQuotes = React.useCallback(() => {
     fetch(`https://prototype.sbulltech.com/api/v2/quotes/${symbol}`)
@@ -11,11 +11,12 @@ const QuotesPage = () => {
       .then((data) => {
         if (data.success) {
           const quotesData = data.payload[symbol] || [];
-          setQuotes(quotesData);
+          const sortingQuotes = sortQuotes(quotesData);
+          setQuotes(sortingQuotes);
         }
       })
-      .catch((error) => console.log('Error fetching'));
-  }, [symbol]);
+       .catch(() => console.log('Error fetching'));
+   }, [symbol]);
 
   useEffect(() => {
     fetchQuotes(); 
@@ -28,6 +29,15 @@ const QuotesPage = () => {
       clearInterval(intervalId); 
     };
   }, [fetchQuotes]);
+  
+  const sortQuotes = (quotesData) => {
+    const sortingQuotes = [...quotesData].sort((a, b) => {
+      const timeA = new Date(a.time).getTime();
+      const timeB = new Date(b.time).getTime();
+      return timeA - timeB; 
+    });
+    return sortingQuotes;
+  };
 
   return (
     <div>
@@ -53,4 +63,5 @@ const QuotesPage = () => {
     </div>
   );
 };
+
 export default QuotesPage;

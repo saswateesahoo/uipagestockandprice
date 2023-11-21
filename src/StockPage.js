@@ -10,7 +10,9 @@ const StockPage = () => {
 
   useEffect(() => {
     fetch('https://prototype.sbulltech.com/api/v2/instruments')
-      .then((response) => response.text())
+
+
+        .then((response) => response.text())
       .then((data) => {
         const jsonData = convertCSVtoJSON(data);
         setStock(jsonData);
